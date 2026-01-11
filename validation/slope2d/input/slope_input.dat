@@ -1,0 +1,24 @@
+# slope_input.dat -- TOY-PEM 斜面検証用の最小設定
+# 空白区切りで「KEY VALUE」を指定。未指定はデフォルトが適用されます。
+
+TIME_STEP 1.0e-7
+MAX_STEPS 1000000
+OUTPUT_INTERVAL 1
+
+# 斜面角度（30度）
+SLOPE_ANGLE 30
+
+# 摩擦係数（μ）。30度では μ_c=(2/7)tanθ≈0.165 → 0.2なら転がり領域
+FRICTION_COEFF 0.2
+
+# 接触モデル
+STIFFNESS_K 1.0e6
+RESTITUTION_COEFF 0.999999
+
+# 粒子
+PARTICLE_RADIUS 1.0e-2
+PARTICLE_DENSITY 2500.0
+
+# 初期位置は未指定（デフォルト: 無侵入・接触開始に自動調整）
+INITIAL_X_CONTACT 1.0e-2
+

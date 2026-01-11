@@ -1,0 +1,32 @@
+# 2D Slope Validation Input File - Rolling Condition
+# 転がり条件: μ ≥ μ_c = (2/7)*tan(θ)
+# θ = 45°の場合、μ_c ≈ 0.286
+# μ = 0.5 > μ_c なので転がりが発生する
+
+# シミュレーション制御
+TIME_STEP           1.0d-6
+MAX_STEPS           5000000
+OUTPUT_INTERVAL     1000
+
+# 斜面パラメータ
+SLOPE_ANGLE         0.785398163397448d0  # 45 degrees in radians (π/4)
+FRICTION_COEFF      0.5                   # μ > μ_c (転がり条件)
+
+# 接触モデルパラメータ
+STIFFNESS_K         1.0d4                 # ばね定数 [N/m]
+RESTITUTION_COEFF   0.8                   # 反発係数 e
+
+# 粒子パラメータ
+PARTICLE_RADIUS     1.0d-2                # 半径 [m]
+PARTICLE_DENSITY    2500.0                # 密度 [kg/m³]
+
+# 初期条件
+INITIAL_X           1.0d-2                # 初期x座標 [m]
+INITIAL_Z           2.5d-2                # 初期z座標 [m] (斜面から少し上)
+
+# 理論値（参考）:
+# μ_c = (2/7)*tan(45°) ≈ 0.286
+# 加速度 a = (5/7)*g*sin(45°) ≈ 4.95 m/s²
+# 速度 v = a*t
+# 角速度 ω = v/r
+
