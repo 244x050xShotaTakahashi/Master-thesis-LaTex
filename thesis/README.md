@@ -32,10 +32,11 @@ latexmk -pvc -pdf charged_dust_dem_thesis
 ### 方法2: Makefile
 
 ```bash
-# PDFを生成（platex + dvipdfmx）
-make
 
 # LuaLaTeXを使用
+make 
+
+# あるいは
 make lualatex
 
 # クリーン（中間ファイル削除）
@@ -53,16 +54,6 @@ lualatex charged_dust_dem_thesis
 lualatex charged_dust_dem_thesis
 lualatex charged_dust_dem_thesis
 
-# または pdfLaTeX
-pdflatex charged_dust_dem_thesis
-pdflatex charged_dust_dem_thesis
-pdflatex charged_dust_dem_thesis
-
-# または platex + dvipdfmx（従来方式）
-platex charged_dust_dem_thesis
-platex charged_dust_dem_thesis
-platex charged_dust_dem_thesis
-dvipdfmx charged_dust_dem_thesis
 ```
 
 ## 必要なパッケージ
