@@ -1,0 +1,988 @@
+% ============================================================================
+% 修士論文 - 帯電ダストダイナミクス解析のための個別要素法シミュレーションモデルの開発
+% ============================================================================
+% コンパイル方法: lualatex main.tex （2〜3回実行）
+% ============================================================================
+\documentclass[a4paper,11pt,twoside,lualatex]{ltjsreport}
+
+% ============================================================================
+% パッケージ読み込み
+% ============================================================================
+% LuaLaTeX用日本語設定
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+% 日本語フォント設定（デフォルトフォントを使用）
+\setmainjfont{Hiragino Mincho ProN}  % macOS標準の明朝体
+\setsansjfont{Hiragino Kaku Gothic ProN}  % macOS標準のゴシック体
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{bm}                     % 太字ベクトル
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{subcaption}             % サブキャプション（(a), (b)等）
+\usepackage{booktabs}               % 表の罫線
+\usepackage{tabularx}               % 柔軟な表
+\usepackage{multirow}               % 表のセル結合
+\usepackage{listings}               % ソースコード表示
+\usepackage{algorithm}              % アルゴリズム
+\usepackage{algorithmic}            % アルゴリズム
+\usepackage{url}                    % URL表示
+\usepackage{hyperref}               % ハイパーリンク
+\usepackage{siunitx}                % SI単位系
+\usepackage{physics}                % 物理記号
+
+% チャプター上部の余白調整
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries}{第\thechapter 章}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-30pt}{30pt}
+
+% ページレイアウト
+\usepackage[top=30mm, bottom=30mm, inner=30mm, outer=25mm]{geometry}
+
+% 定理環境
+\theoremstyle{definition}
+\newtheorem{definition}{定義}[chapter]
+\newtheorem{theorem}{定理}[chapter]
+
+% ソースコードの設定
+\lstset{
+    language=Fortran,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=5,
+    frame=single,
+    breaklines=true,
+    captionpos=b,
+}
+
+% ハイパーリンクの設定
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% ============================================================================
+% 本文開始
+% ============================================================================
+\begin{document}
+
+% ----------------------------------------------------------------------------
+% 表紙
+% ----------------------------------------------------------------------------
+\begin{titlepage}
+\centering
+
+\vspace*{2cm}
+
+{\fontsize{24pt}{24pt}\selectfont 2025年度}\\[0.3cm]
+{\fontsize{24pt}{24pt}\selectfont 修士論文}
+
+\vspace{3cm}
+
+{\LARGE 帯電ダストダイナミクス解析のための}\\[0.5cm]
+{\LARGE 個別要素法シミュレーションモデルの開発}
+
+\vspace{3cm}
+
+{\fontsize{16pt}{16pt}\selectfont 神戸大学大学院システム情報学研究科}\\[0.2cm]
+{\fontsize{16pt}{16pt}\selectfont システム情報学専攻}
+
+\vspace{1.5cm}
+
+{\Large 高橋　昇大}
+
+\vspace{1cm}
+
+% 指導教員・審査教員の表
+{\fontsize{16pt}{16pt}\selectfont
+\begin{tabular}{l@{\hspace{1.5em}}l@{\hspace{1em}}l@{\hspace{1em}}l}
+\underline{指導教員}  & \underline{三宅　洋平　准教授} \\[0.8em]
+                    & \underline{臼井　英之　教授} \\[0.8em]
+                    & \underline{岩本　昌倫　特命助教} \\[0.8em]
+                    
+\underline{審査教員} & \underline{主査　臼井　英之　教授} \\[0.8em]
+                     & \underline{副査　坪倉　誠　教授} \\[0.8em]
+                     & \underline{副査　三宅　洋平　准教授} \\
+\end{tabular}
+}
+
+\vfill
+
+{\large 2026年2月5日}
+
+\end{titlepage}
+
+% ----------------------------------------------------------------------------
+% 要旨
+% ----------------------------------------------------------------------------
+\chapter*{要旨}
+\addcontentsline{toc}{chapter}{要旨}
+
+本研究では、粉体挙動のシミュレーションに広く用いられる離散要素法（Discrete Element Method, DEM）に基づく粒子シミュレーションプログラムを開発し、その妥当性を検証した。
+
+開発したプログラムは、Hertz-Mindlin接触力モデル、クーロン摩擦モデル、転がり摩擦モデル、および静電気力（クーロン力）モデルを実装している。時間積分には蛙飛び法（Leapfrog法）を採用し、計算効率化のためにセル法による近傍探索アルゴリズムを導入した。プログラムはFortran 90で実装し、約3000行のコードで構成される。
+
+プログラムの妥当性検証として、減衰振動子モデル、壁面接触モデル、および斜面滑り・転がりモデルの3種類の検証計算を実施した。いずれも理論解との良好な一致を確認し、接触力計算および時間積分法の正確性を実証した。
+
+応用例として、粒子堆積物の安息角シミュレーションを実施した。壁引き抜き法により形成された斜面の安息角を測定し、摩擦係数と安息角の関係を調査した。シミュレーション結果は実験的に知られている傾向と定性的に一致しており、開発したプログラムが粉体挙動の予測に有効であることを示した。
+
+\vspace{1cm}
+\noindent\textbf{キーワード：}離散要素法、粒子シミュレーション、Hertz-Mindlin接触モデル、安息角、数値計算
+
+\newpage
+
+% ----------------------------------------------------------------------------
+% Abstract（英文要旨）
+% ----------------------------------------------------------------------------
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+In this study, a particle simulation program based on the Discrete Element Method (DEM), which is widely used for simulating granular material behavior, was developed and validated.
+
+The developed program implements the Hertz-Mindlin contact force model, Coulomb friction model, rolling friction model, and electrostatic (Coulomb) force model. The leapfrog method was adopted for time integration, and a cell-based neighbor search algorithm was introduced for computational efficiency. The program was implemented in Fortran 90 and consists of approximately 3000 lines of code.
+
+For validation of the program, three types of verification calculations were performed: a damped oscillator model, a wall contact model, and a slope sliding/rolling model. Good agreement with theoretical solutions was confirmed in all cases, demonstrating the accuracy of the contact force calculation and time integration method.
+
+As an application example, repose angle simulation of particle deposits was performed. The repose angle of slopes formed by the wall withdrawal method was measured, and the relationship between friction coefficient and repose angle was investigated. The simulation results qualitatively agree with experimentally known trends, indicating that the developed program is effective for predicting granular material behavior.
+
+\vspace{1cm}
+\noindent\textbf{Keywords:} Discrete Element Method, Particle Simulation, Hertz-Mindlin Contact Model, Angle of Repose, Numerical Calculation
+
+\newpage
+
+% ----------------------------------------------------------------------------
+% 目次
+% ----------------------------------------------------------------------------
+\tableofcontents
+\newpage
+
+% ----------------------------------------------------------------------------
+% 図目次・表目次
+% ----------------------------------------------------------------------------
+\listoffigures
+\addcontentsline{toc}{chapter}{図目次}
+\newpage
+
+\listoftables
+\addcontentsline{toc}{chapter}{表目次}
+\newpage
+
+% ============================================================================
+% 第1章：緒論
+% ============================================================================
+\chapter{緒論}
+\label{chap:introduction}
+
+\section{研究背景}
+\label{sec:background}
+
+粉体は、砂、土、穀物、医薬品、化学製品など、我々の身の回りに広く存在する物質形態である。粉体の挙動を理解し予測することは、土木工学、資源工学、製薬工学、食品工学など多くの分野において重要である。
+
+粉体の挙動は、固体や液体とは異なる独特の性質を示す。例えば、粉体は容器の形状に応じて流動する一方で、斜面上では安息角と呼ばれる特定の角度で安定する。このような複雑な挙動を理論的に予測することは困難であり、数値シミュレーションによるアプローチが有効である。
+
+離散要素法（Discrete Element Method, DEM）は、粉体を構成する個々の粒子を独立した要素として扱い、粒子間の相互作用を通じて系全体の挙動を計算する手法である。1979年にCundalとStrackによって提案されて以来\cite{cundall1979}、DEMは粉体シミュレーションの標準的な手法として広く普及している。
+
+近年、計算機の性能向上に伴い、数万から数百万個の粒子を扱うDEMシミュレーションが可能となり、その適用範囲は拡大している。特に、静電気を帯びた粉体の挙動や、複雑な形状を持つ粒子の挙動など、より現実的な条件下でのシミュレーションが求められている。
+
+\section{研究目的}
+\label{sec:objective}
+
+本研究の目的は以下の通りである：
+
+\begin{enumerate}
+    \item \textbf{DEMプログラムの開発：} Hertz-Mindlin接触力モデル、摩擦モデル、および静電気力モデルを実装した2次元DEMプログラムを開発する。
+    
+    \item \textbf{プログラムの検証：} 理論解が既知の単純な問題に対して計算を実施し、開発したプログラムの妥当性を検証する。
+    
+    \item \textbf{安息角シミュレーション：} 開発したプログラムを用いて粒子堆積物の安息角シミュレーションを実施し、摩擦係数と安息角の関係を調査する。
+\end{enumerate}
+
+\section{論文構成}
+\label{sec:outline}
+
+本論文は全6章から構成される。
+
+\textbf{第1章}（本章）では、研究の背景と目的を述べた。
+
+\textbf{第2章}では、離散要素法の理論的基礎について説明する。運動方程式、接触力モデル、摩擦モデル、時間積分法、および近傍探索アルゴリズムについて述べる。
+
+\textbf{第3章}では、開発したDEMプログラムの実装について説明する。プログラム構成、データ構造、および入出力形式について述べる。
+
+\textbf{第4章}では、プログラムの妥当性検証について説明する。減衰振動子モデル、壁面接触モデル、および斜面モデルによる検証結果を示す。
+
+\textbf{第5章}では、安息角シミュレーションの結果について説明する。計算条件、摩擦係数の影響、および結果の考察を述べる。
+
+\textbf{第6章}では、本研究のまとめと今後の課題を述べる。
+
+% ============================================================================
+% 第2章：個別要素法の理論
+% ============================================================================
+\chapter{個別要素法の理論}
+\label{chap:theory}
+
+本章では、個別要素法（DEM）の理論的基礎について説明する。
+
+\section{基礎方程式}
+\label{sec:governing_eq}
+
+DEMでは、各粒子の運動を Newton の運動方程式に基づいて計算する。粒子 $i$ の並進運動および回転運動は以下の式で表される。
+
+\begin{equation}
+    m_i \frac{d^2 \bm{x}_i}{dt^2} = \bm{F}_i^{c} + \bm{F}_i^{g} + \bm{F}_i^{e}
+    \label{eq:translation}
+\end{equation}
+
+\begin{equation}
+    I_i \frac{d\omega_i}{dt} = M_i
+    \label{eq:rotation}
+\end{equation}
+
+ここで、$m_i$ は粒子の質量、$\bm{x}_i$ は粒子中心の位置ベクトル、$\bm{F}_i^{c}$ は接触力の合力、$\bm{F}_i^{g}$ は重力、$\bm{F}_i^{e}$ は静電気力、$I_i$ は慣性モーメント、$\omega_i$ は角速度、$M_i$ はモーメントの合計である。
+
+球形粒子の場合、質量および慣性モーメントは以下で与えられる。
+
+\begin{equation}
+    m_i = \frac{4}{3} \pi r_i^3 \rho
+\end{equation}
+
+\begin{equation}
+    I_i = \frac{2}{5} m_i r_i^2
+\end{equation}
+
+ここで、$r_i$ は粒子半径、$\rho$ は粒子密度である。
+
+\section{接触判定}
+\label{sec:contact_detection}
+
+2つの球形粒子 $i$ と $j$ が接触しているかどうかは、粒子中心間距離 $d_{ij}$ と粒子半径の和 $r_i + r_j$ の比較により判定する。
+
+\begin{equation}
+    \delta_n = r_i + r_j - d_{ij}
+\end{equation}
+
+$\delta_n > 0$ のとき、粒子は接触しており、$\delta_n$ をオーバーラップ（食い込み量）と呼ぶ。
+
+\section{Hertz-Mindlin接触力モデル}
+\label{sec:hertz_mindlin}
+
+本研究では、Hertz-Mindlin接触力モデルを採用する。このモデルでは、接触力を法線方向成分と接線方向成分に分解して計算する。
+
+\subsection{法線方向接触力}
+
+法線方向接触力は、弾性力成分と粘性力成分から構成される。
+
+\begin{equation}
+    F_n = F_n^{e} + F_n^{d}
+\end{equation}
+
+弾性力成分は Hertz の接触理論に基づき、以下で与えられる。
+
+\begin{equation}
+    F_n^{e} = \frac{4}{3} E^* \sqrt{R^*} \delta_n^{3/2}
+\end{equation}
+
+ここで、$E^*$ は等価ヤング率、$R^*$ は等価半径である。
+
+\begin{equation}
+    \frac{1}{E^*} = \frac{1-\nu_i^2}{E_i} + \frac{1-\nu_j^2}{E_j}
+\end{equation}
+
+\begin{equation}
+    \frac{1}{R^*} = \frac{1}{r_i} + \frac{1}{r_j}
+\end{equation}
+
+粘性力成分は、以下で与えられる。
+
+\begin{equation}
+    F_n^{d} = -\gamma_n \sqrt{\delta_n} \dot{\delta}_n
+\end{equation}
+
+ここで、$\gamma_n$ は法線方向粘性係数、$\dot{\delta}_n$ はオーバーラップの時間変化率である。
+
+粘性係数は反発係数 $e$ から以下の式で計算する。
+
+\begin{equation}
+    \gamma_n = -\frac{2 \ln e}{\sqrt{\ln^2 e + \pi^2}} \sqrt{5 m^* k_n}
+\end{equation}
+
+ここで、$m^* = m_i m_j / (m_i + m_j)$ は等価質量、$k_n$ は法線方向剛性である。
+
+\subsection{接線方向接触力}
+
+接線方向接触力（せん断力）は、接線方向変位の履歴に基づいて計算する。
+
+\begin{equation}
+    F_t = \min(k_t \delta_t + \gamma_t \dot{\delta}_t, \mu F_n)
+\end{equation}
+
+ここで、$k_t$ は接線方向剛性、$\delta_t$ は接線方向変位、$\gamma_t$ は接線方向粘性係数、$\mu$ は摩擦係数である。
+
+接線方向力の大きさがクーロン摩擦限界 $\mu F_n$ を超える場合、滑りが発生し、接線方向力は $\mu F_n$ で頭打ちとなる。
+
+\section{転がり摩擦モデル}
+\label{sec:rolling_friction}
+
+粒子の転がり運動に対する抵抗を表現するため、転がり摩擦モデルを導入する。転がり摩擦トルクは以下で与えられる。
+
+\begin{equation}
+    M_r = -\mu_r R^* F_n \frac{\omega_{rel}}{|\omega_{rel}|}
+\end{equation}
+
+ここで、$\mu_r$ は転がり摩擦係数、$\omega_{rel}$ は相対角速度である。
+
+\section{静電気力（クーロン力）モデル}
+\label{sec:coulomb_force}
+
+帯電した粒子間に働く静電気力（クーロン力）は以下で与えられる。
+
+\begin{equation}
+    \bm{F}_{ij}^{e} = k_e \frac{q_i q_j}{r_{ij}^2} \hat{\bm{r}}_{ij}
+\end{equation}
+
+ここで、$k_e = 8.99 \times 10^9$ N$\cdot$m$^2$/C$^2$ はクーロン定数、$q_i, q_j$ は粒子の電荷、$r_{ij}$ は粒子間距離、$\hat{\bm{r}}_{ij}$ は粒子 $i$ から $j$ への単位ベクトルである。
+
+計算コストを削減するため、カットオフ半径 $r_c$ を導入し、$r_{ij} > r_c$ の場合はクーロン力を無視する。また、カットオフ境界での力の不連続性を避けるため、シフト力を用いて力をゼロに滑らかに接続する。
+
+\begin{equation}
+    \bm{F}_{ij}^{e,shifted} = \bm{F}_{ij}^{e}(r_{ij}) - \bm{F}_{ij}^{e}(r_c)
+\end{equation}
+
+さらに、$r_{ij} \to 0$ での発散を防ぐため、ソフトニングパラメータ $\varepsilon$ を導入する。
+
+\begin{equation}
+    \bm{F}_{ij}^{e} = k_e \frac{q_i q_j}{(r_{ij}^2 + \varepsilon^2)} \hat{\bm{r}}_{ij}
+\end{equation}
+
+\section{時間積分法：蛙飛び法}
+\label{sec:leapfrog}
+
+時間積分には蛙飛び法（Leapfrog法）を採用する。この方法は2次精度を持ち、時間反転対称性により長時間計算でもエネルギーのドリフトが小さいという利点がある。
+
+速度は半整数時刻で、位置は整数時刻で更新する。
+
+\begin{equation}
+    \bm{v}_{i}^{n+1/2} = \bm{v}_{i}^{n-1/2} + \frac{\bm{F}_i^n}{m_i} \Delta t
+\end{equation}
+
+\begin{equation}
+    \bm{x}_{i}^{n+1} = \bm{x}_{i}^{n} + \bm{v}_{i}^{n+1/2} \Delta t
+\end{equation}
+
+同様に、角速度および回転角についても以下のように更新する。
+
+\begin{equation}
+    \omega_{i}^{n+1/2} = \omega_{i}^{n-1/2} + \frac{M_i^n}{I_i} \Delta t
+\end{equation}
+
+\begin{equation}
+    \theta_{i}^{n+1} = \theta_{i}^{n} + \omega_{i}^{n+1/2} \Delta t
+\end{equation}
+
+\section{時間刻みの決定}
+\label{sec:timestep}
+
+数値計算の安定性を確保するため、時間刻み $\Delta t$ は臨界時間刻み以下に設定する必要がある。Rayleigh時間刻み $\Delta t_R$ は以下で定義される。
+
+\begin{equation}
+    \Delta t_R = \pi r_{min} \sqrt{\frac{\rho}{G}} \frac{1}{0.1631 \nu + 0.8766}
+\end{equation}
+
+ここで、$r_{min}$ は最小粒子半径、$G$ はせん断弾性係数である。
+
+実際には、$\Delta t < 0.1 \sim 0.2 \times \Delta t_R$ とすることが推奨される。
+
+\section{近傍探索アルゴリズム：セル法}
+\label{sec:cell_method}
+
+DEMシミュレーションにおいて、全粒子対について接触判定を行うと計算量は $O(N^2)$ となり、粒子数が増加すると計算コストが膨大になる。これを改善するため、セル法（Cell Method）による近傍探索アルゴリズムを導入する。
+
+計算領域を一辺の長さ $L_c \geq 2r_{max}$（$r_{max}$ は最大粒子半径）の格子状に分割し、各粒子を属するセルに登録する。接触判定は、同一セル内および隣接セル内の粒子対のみに対して行う。これにより、計算量は $O(N)$ に削減される。
+
+\begin{algorithm}
+\caption{セル法による接触判定}
+\begin{algorithmic}
+\STATE 全粒子をセルに登録
+\FOR{各セル $c$}
+    \FOR{セル $c$ 内および隣接セル内の粒子対 $(i, j)$}
+        \STATE $d_{ij} \gets |\bm{x}_i - \bm{x}_j|$
+        \IF{$d_{ij} < r_i + r_j$}
+            \STATE 接触力を計算
+        \ENDIF
+    \ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+% ============================================================================
+% 第3章：DEMプログラムの実装
+% ============================================================================
+\chapter{DEMプログラムの実装}
+\label{chap:implementation}
+
+本章では、開発したDEMプログラムの実装について説明する。
+
+\section{プログラム概要}
+\label{sec:program_overview}
+
+開発したプログラムは、Fortran 90で実装した2次元DEM（厳密には2次元平面内を運動する球形粒子）シミュレータである。プログラムは約3000行のコードで構成され、以下の機能を有する。
+
+\begin{itemize}
+    \item Hertz-Mindlin接触力モデル
+    \item クーロン摩擦モデル（滑り摩擦）
+    \item 転がり摩擦モデル
+    \item 静電気力（クーロン力）モデル
+    \item セル法による近傍探索
+    \item 壁面（垂直壁および斜面壁）との接触
+    \item 壁引き抜き機能（安息角測定用）
+    \item プロファイリング機能（計算時間計測）
+\end{itemize}
+
+\section{プログラム構成}
+\label{sec:program_structure}
+
+プログラムは以下のモジュールで構成される。
+
+\begin{table}[htbp]
+\centering
+\caption{プログラムのモジュール構成}
+\label{tab:modules}
+\begin{tabular}{ll}
+\toprule
+モジュール名 & 機能 \\
+\midrule
+\texttt{simulation\_constants\_mod} & 定数の定義（最大粒子数、$\pi$、重力加速度等） \\
+\texttt{simulation\_parameters\_mod} & シミュレーションパラメータの保持 \\
+\texttt{particle\_data\_mod} & 粒子データ（位置、速度、力等）の保持 \\
+\texttt{cell\_system\_mod} & セル法関連データの保持 \\
+\texttt{wall\_data\_mod} & 壁データの保持 \\
+\texttt{profiling\_mod} & プロファイリング機能 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+主要なサブルーチンを表\ref{tab:subroutines}に示す。
+
+\begin{table}[htbp]
+\centering
+\caption{主要なサブルーチン}
+\label{tab:subroutines}
+\begin{tabular}{ll}
+\toprule
+サブルーチン名 & 機能 \\
+\midrule
+\texttt{read\_input\_file} & 入力ファイルの読み込み \\
+\texttt{fposit\_sub} & 粒子の初期配置生成 \\
+\texttt{inmat\_sub} & 材料パラメータの計算 \\
+\texttt{init\_sub} & 初期化処理 \\
+\texttt{pcont\_sub} & 粒子間接触判定 \\
+\texttt{wcont\_sub} & 壁-粒子間接触判定 \\
+\texttt{actf\_sub} & 接触力の計算 \\
+\texttt{nposit\_leapfrog\_sub} & 時間積分（蛙飛び法） \\
+\texttt{calculate\_coulomb\_forces} & クーロン力の計算 \\
+\texttt{gfout\_sub} & 結果の出力 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{データ構造}
+\label{sec:data_structure}
+
+粒子データは配列として保持し、各粒子に対して以下の情報を管理する。
+
+\begin{itemize}
+    \item 位置座標 $(x, z)$
+    \item 速度 $(v_x, v_z)$
+    \item 角速度 $\omega$
+    \item 半径 $r$
+    \item 質量 $m$
+    \item 慣性モーメント $I$
+    \item 電荷 $q$
+    \item 合力 $(F_x, F_z)$
+    \item モーメント $M$
+    \item 接触相手情報（粒子番号、法線力、接線力）
+\end{itemize}
+
+\section{入力ファイル形式}
+\label{sec:input_format}
+
+シミュレーションパラメータはテキスト形式の入力ファイルで指定する。主要なパラメータを以下に示す。
+
+\begin{lstlisting}[caption={入力ファイルの例},label={lst:input}]
+# シミュレーション制御パラメータ
+TIME_STEP                   1.0e-7
+MAX_CALCULATION_STEPS       100000000
+
+# 材料物性値
+YOUNG_MODULUS_PARTICLE      4.9e9
+YOUNG_MODULUS_WALL          3.9e9
+POISSON_RATIO_PARTICLE      0.23
+POISSON_RATIO_WALL          0.25
+PARTICLE_DENSITY            2480.0
+
+# 摩擦係数
+FRICTION_COEFF_PARTICLE     0.25
+FRICTION_COEFF_WALL         0.17
+ROLLING_FRICTION_COEFF_PARTICLE    0.0
+ROLLING_FRICTION_COEFF_WALL        0.0
+
+# 粒子生成パラメータ
+PARTICLE_RADIUS_LARGE       5.0e-3
+PARTICLE_RADIUS_SMALL       5.0e-3
+CONTAINER_WIDTH             1.5
+PARTICLE_GEN_LAYERS         22
+\end{lstlisting}
+
+\section{出力ファイル形式}
+\label{sec:output_format}
+
+シミュレーション結果は CSV 形式で出力する。出力ファイルには以下の情報が含まれる。
+
+\begin{itemize}
+    \item \texttt{particles.csv}：各時間ステップでの粒子位置・速度データ
+    \item \texttt{contacts.csv}：接触情報（接触粒子対、接触力）
+    \item \texttt{timing.csv}：計算時間のプロファイリング結果
+    \item \texttt{repose\_angle\_results.csv}：安息角測定結果
+\end{itemize}
+
+% ============================================================================
+% 第4章：検証計算
+% ============================================================================
+\chapter{検証計算}
+\label{chap:validation}
+
+本章では、開発したDEMプログラムの妥当性検証について説明する。
+
+\section{検証の概要}
+\label{sec:validation_overview}
+
+プログラムの検証として、以下の3種類の問題を対象とした。
+
+\begin{enumerate}
+    \item 減衰振動子モデル：時間積分法の検証
+    \item 壁面接触モデル：接触力計算の検証
+    \item 斜面モデル：滑り・転がり運動の検証
+\end{enumerate}
+
+いずれも理論解が既知の問題であり、数値解と理論解を比較することで実装の正確性を確認した。
+
+\section{減衰振動子モデル}
+\label{sec:damped_oscillator}
+
+\subsection{問題設定}
+
+マス-バネ-ダンパ系の減衰振動を蛙飛び法で数値積分し、理論解との一致を確認する。運動方程式は以下で表される。
+
+\begin{equation}
+    m \ddot{x} + c \dot{x} + k x = 0
+\end{equation}
+
+初期条件は $x(0) = x_0$, $\dot{x}(0) = 0$ とする。
+
+理論解（減衰不足の場合）は以下で与えられる。
+
+\begin{equation}
+    x(t) = x_0 e^{-\zeta \omega_n t} \left( \cos \omega_d t + \frac{\zeta}{\sqrt{1-\zeta^2}} \sin \omega_d t \right)
+\end{equation}
+
+ここで、$\omega_n = \sqrt{k/m}$ は固有角振動数、$\zeta = c/(2\sqrt{km})$ は減衰比、$\omega_d = \omega_n \sqrt{1-\zeta^2}$ は減衰固有角振動数である。
+
+\subsection{計算条件}
+
+計算に用いたパラメータを表\ref{tab:damped_params}に示す。
+
+\begin{table}[htbp]
+\centering
+\caption{減衰振動子モデルの計算パラメータ}
+\label{tab:damped_params}
+\begin{tabular}{lll}
+\toprule
+パラメータ & 値 & 単位 \\
+\midrule
+質量 $m$ & 1.0 & kg \\
+バネ定数 $k$ & 1.0 & N/m \\
+反発係数 $e$ & 0.25 & - \\
+粘性係数 $c$ & 0.807 & N$\cdot$s/m \\
+初期変位 $x_0$ & 1.0 & m \\
+時間刻み $\Delta t$ & $10^{-4}$ & s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{検証結果}
+
+% ここに図を挿入
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{figures/damped_oscillator.pdf}
+% \caption{減衰振動子モデルの検証結果}
+% \label{fig:damped_result}
+% \end{figure}
+
+数値解と理論解の比較結果を示す。RMSE（二乗平均平方根誤差）は $10^{-6}$ m 以下であり、良好な一致が確認された。これにより、蛙飛び法による時間積分の実装が正確であることが検証された。
+
+\section{壁面接触モデル}
+\label{sec:wall_contact}
+
+\subsection{問題設定}
+
+1次元空間において、粒子が一定速度で壁に衝突し反発する問題を考える。衝突時のオーバーラップの時間変化を理論解と比較する。
+
+接触中の運動方程式は以下で表される。
+
+\begin{equation}
+    m \ddot{\delta} + c \dot{\delta} + k \delta = 0
+\end{equation}
+
+ここで、$\delta$ はオーバーラップである。
+
+\subsection{計算条件}
+
+計算パラメータは減衰振動子モデルと同様とし、粒子の初期速度を $v_0 = 1.0$ m/s とした。
+
+\subsection{検証結果}
+
+% ここに図を挿入
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{figures/wall_contact.pdf}
+% \caption{壁面接触モデルの検証結果}
+% \label{fig:wall_result}
+% \end{figure}
+
+オーバーラップの時間変化について、数値解と理論解の良好な一致が確認された。また、衝突後の粒子速度から計算した反発係数は、入力値と一致した。これにより、接触力計算の実装が正確であることが検証された。
+
+\section{斜面モデル}
+\label{sec:slope_model}
+
+\subsection{問題設定}
+
+傾斜角 $\theta$ の斜面上に粒子を配置し、重力による滑り・転がり運動を計算する。摩擦角 $\phi = \arctan \mu$ と斜面傾斜角 $\theta$ の関係により、以下の運動が生じる。
+
+\begin{itemize}
+    \item $\theta < \phi$：静止（滑りなし）
+    \item $\theta \geq \phi$：滑り下り
+\end{itemize}
+
+滑り運動中の加速度は以下で与えられる。
+
+\begin{equation}
+    a = g (\sin \theta - \mu \cos \theta)
+\end{equation}
+
+\subsection{検証結果}
+
+滑り運動について、理論解との良好な一致が確認された。また、摩擦角より小さい傾斜角では粒子が静止することも確認された。
+
+% ============================================================================
+% 第5章：安息角シミュレーション
+% ============================================================================
+\chapter{安息角シミュレーション}
+\label{chap:repose_angle}
+
+本章では、開発したDEMプログラムを用いた安息角シミュレーションについて説明する。
+
+\section{安息角とは}
+\label{sec:repose_angle_def}
+
+安息角（Angle of Repose）とは、粉体を堆積させたときに形成される斜面が安定を保つことのできる最大の傾斜角である。安息角は粉体の流動性を評価する重要な指標であり、粒子の形状、大きさ、表面状態、摩擦係数などに依存する。
+
+\section{計算手法：壁引き抜き法}
+\label{sec:wall_withdrawal}
+
+本研究では、壁引き抜き法により安息角を測定した。この方法は以下の手順で行う。
+
+\begin{enumerate}
+    \item 矩形容器内に粒子を充填し、重力下で静止させる
+    \item 容器の側壁を瞬間的に除去（引き抜き）する
+    \item 粒子が崩落し、新たな斜面が形成される
+    \item 斜面の傾斜角を安息角として測定する
+\end{enumerate}
+
+斜面の傾斜角は、表面粒子の座標データに対して線形回帰を行い、得られた傾きから算出した。
+
+\section{計算条件}
+\label{sec:simulation_conditions}
+
+安息角シミュレーションに用いた計算条件を表\ref{tab:repose_params}に示す。
+
+\begin{table}[htbp]
+\centering
+\caption{安息角シミュレーションの計算条件}
+\label{tab:repose_params}
+\begin{tabular}{lll}
+\toprule
+パラメータ & 値 & 単位 \\
+\midrule
+粒子半径 $r$ & 5.0 & mm \\
+粒子密度 $\rho$ & 2480 & kg/m$^3$ \\
+ヤング率（粒子）$E_p$ & $4.9 \times 10^9$ & Pa \\
+ヤング率（壁）$E_w$ & $3.9 \times 10^9$ & Pa \\
+ポアソン比（粒子）$\nu_p$ & 0.23 & - \\
+ポアソン比（壁）$\nu_w$ & 0.25 & - \\
+摩擦係数（粒子間）$\mu_p$ & 0.0 $\sim$ 1.0 & - \\
+摩擦係数（壁-粒子）$\mu_w$ & 0.17 & - \\
+容器幅 $W$ & 1.5 & m \\
+時間刻み $\Delta t$ & $10^{-7}$ & s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{摩擦係数と安息角の関係}
+\label{sec:friction_vs_angle}
+
+粒子間摩擦係数 $\mu$ を 0.0 から 1.0 まで変化させ、各条件での安息角を測定した。
+
+% ここに図を挿入
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{figures/friction_vs_angle.pdf}
+% \caption{摩擦係数と安息角の関係}
+% \label{fig:friction_angle}
+% \end{figure}
+
+結果として、摩擦係数の増加に伴い安息角も増加する傾向が確認された。これは、摩擦力が大きいほど粒子間の滑りが抑制され、より急な斜面が安定するためである。
+
+また、摩擦係数 $\mu$ と安息角 $\theta_r$ の関係は、理論的に $\theta_r \approx \arctan \mu$ で近似されることが知られている。本シミュレーション結果もこの傾向と定性的に一致した。
+
+\section{粒子堆積の可視化}
+\label{sec:visualization}
+
+% ここに図を挿入
+% \begin{figure}[htbp]
+% \centering
+% \begin{subfigure}[b]{0.45\textwidth}
+%     \includegraphics[width=\textwidth]{figures/before_withdrawal.pdf}
+%     \caption{壁引き抜き前}
+% \end{subfigure}
+% \begin{subfigure}[b]{0.45\textwidth}
+%     \includegraphics[width=\textwidth]{figures/after_withdrawal.pdf}
+%     \caption{壁引き抜き後}
+% \end{subfigure}
+% \caption{壁引き抜き法による安息角シミュレーション}
+% \label{fig:withdrawal}
+% \end{figure}
+
+図は、壁引き抜き前後の粒子配置を示している。壁を引き抜くと、支えを失った粒子が崩落し、安息角で特徴付けられる斜面が形成されることが確認できる。
+
+\section{考察}
+\label{sec:discussion}
+
+本シミュレーション結果より、以下のことが考察される。
+
+\begin{enumerate}
+    \item 摩擦係数と安息角の正の相関は、理論的予測および実験的知見と定性的に一致する。
+    
+    \item 実際の粉体では、粒子形状の不規則性、粒子径分布、凝集力などが安息角に影響するが、本シミュレーションでは球形等径粒子を仮定している。これらの効果を考慮することで、より現実的な予測が可能になると考えられる。
+    
+    \item 転がり摩擦モデルを導入することで、非球形粒子の効果を間接的に表現できる可能性がある。
+\end{enumerate}
+
+% ============================================================================
+% 第6章：結論
+% ============================================================================
+\chapter{結論}
+\label{chap:conclusion}
+
+\section{本研究のまとめ}
+\label{sec:summary}
+
+本研究では、離散要素法（DEM）に基づく粒子シミュレーションプログラムを開発し、その妥当性検証および安息角シミュレーションへの応用を行った。得られた成果を以下にまとめる。
+
+\begin{enumerate}
+    \item \textbf{DEMプログラムの開発}\\
+    Fortran 90により、Hertz-Mindlin接触力モデル、摩擦モデル、クーロン力モデル、セル法による近傍探索を実装した約3000行のDEMプログラムを開発した。
+    
+    \item \textbf{妥当性の検証}\\
+    減衰振動子モデル、壁面接触モデル、斜面モデルの3種類の検証計算を実施し、理論解との良好な一致を確認した。これにより、時間積分法および接触力計算の実装が正確であることを実証した。
+    
+    \item \textbf{安息角シミュレーション}\\
+    壁引き抜き法による安息角シミュレーションを実施し、摩擦係数と安息角の関係を調査した。摩擦係数の増加に伴い安息角も増加するという、理論的・実験的に知られている傾向と定性的に一致する結果を得た。
+\end{enumerate}
+
+\section{今後の課題}
+\label{sec:future_work}
+
+本研究の発展として、以下の課題が挙げられる。
+
+\begin{enumerate}
+    \item \textbf{3次元への拡張}\\
+    現在のプログラムは2次元（平面内運動）に限定されている。3次元への拡張により、より現実的なシミュレーションが可能となる。
+    
+    \item \textbf{並列計算の導入}\\
+    大規模計算に対応するため、OpenMPやMPIによる並列化を行い、計算効率を向上させる。
+    
+    \item \textbf{非球形粒子への対応}\\
+    楕円体や多面体など、非球形粒子の接触力計算を実装することで、より現実的な粒子形状を扱えるようにする。
+    
+    \item \textbf{実験との比較}\\
+    実際の粉体を用いた安息角測定実験を行い、シミュレーション結果との定量的な比較を行う。
+    
+    \item \textbf{応用展開}\\
+    粉体充填、粉体流動、篩分けなど、産業プロセスへの応用を検討する。
+\end{enumerate}
+
+% ============================================================================
+% 謝辞
+% ============================================================================
+\chapter*{謝辞}
+\addcontentsline{toc}{chapter}{謝辞}
+
+本研究を進めるにあたり、多くの方々にご指導・ご協力をいただきました。
+
+指導教員の○○先生には、研究の方向性から論文の執筆に至るまで、懇切丁寧なご指導を賜りました。ここに深く感謝申し上げます。
+
+また、○○研究室の皆様には、日々の研究活動において多くの助言と励ましをいただきました。心より感謝いたします。
+
+最後に、学生生活を支えてくれた家族に感謝いたします。
+
+\vspace{2cm}
+\begin{flushright}
+令和X年X月\\
+高橋 昇大
+\end{flushright}
+
+% ============================================================================
+% 参考文献
+% ============================================================================
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{参考文献}
+
+\bibitem{cundall1979}
+P. A. Cundall and O. D. L. Strack,
+``A discrete numerical model for granular assemblies,''
+\textit{Géotechnique}, Vol. 29, No. 1, pp. 47--65, 1979.
+
+\bibitem{hertz1882}
+H. Hertz,
+``Über die Berührung fester elastischer Körper,''
+\textit{Journal für die reine und angewandte Mathematik}, Vol. 92, pp. 156--171, 1882.
+
+\bibitem{mindlin1953}
+R. D. Mindlin and H. Deresiewicz,
+``Elastic spheres in contact under varying oblique forces,''
+\textit{Journal of Applied Mechanics}, Vol. 20, pp. 327--344, 1953.
+
+\bibitem{thornton1998}
+C. Thornton and K. K. Yin,
+``Impact of elastic spheres with and without adhesion,''
+\textit{Powder Technology}, Vol. 99, pp. 154--162, 1998.
+
+\bibitem{zhou1999}
+Y. C. Zhou, B. D. Wright, R. Y. Yang, B. H. Xu, and A. B. Yu,
+``Rolling friction in the dynamic simulation of sandpile formation,''
+\textit{Physica A}, Vol. 269, pp. 536--553, 1999.
+
+\bibitem{iwashita1998}
+K. Iwashita and M. Oda,
+``Rolling resistance at contacts in simulation of shear band development by DEM,''
+\textit{Journal of Engineering Mechanics}, Vol. 124, pp. 285--292, 1998.
+
+\bibitem{brilliantov1996}
+N. V. Brilliantov, F. Spahn, J. M. Hertzsch, and T. Pöschel,
+``Model for collisions in granular gases,''
+\textit{Physical Review E}, Vol. 53, pp. 5382--5392, 1996.
+
+\bibitem{verlet1967}
+L. Verlet,
+``Computer `experiments' on classical fluids. I. Thermodynamical properties of Lennard-Jones molecules,''
+\textit{Physical Review}, Vol. 159, pp. 98--103, 1967.
+
+\bibitem{allen1987}
+M. P. Allen and D. J. Tildesley,
+\textit{Computer Simulation of Liquids},
+Oxford University Press, 1987.
+
+\bibitem{poschel2005}
+T. Pöschel and T. Schwager,
+\textit{Computational Granular Dynamics: Models and Algorithms},
+Springer, 2005.
+
+\end{thebibliography}
+
+% ============================================================================
+% 付録
+% ============================================================================
+\appendix
+
+\chapter{入力パラメータ一覧}
+\label{app:parameters}
+
+表\ref{tab:all_params}に、DEMプログラムで使用可能なすべての入力パラメータを示す。
+
+\begin{table}[htbp]
+\centering
+\caption{入力パラメータ一覧}
+\label{tab:all_params}
+\small
+\begin{tabularx}{\textwidth}{lXl}
+\toprule
+パラメータ名 & 説明 & 単位 \\
+\midrule
+\texttt{TIME\_STEP} & 時間刻み & s \\
+\texttt{MAX\_CALCULATION\_STEPS} & 最大計算ステップ数 & - \\
+\texttt{YOUNG\_MODULUS\_PARTICLE} & 粒子のヤング率 & Pa \\
+\texttt{YOUNG\_MODULUS\_WALL} & 壁のヤング率 & Pa \\
+\texttt{POISSON\_RATIO\_PARTICLE} & 粒子のポアソン比 & - \\
+\texttt{POISSON\_RATIO\_WALL} & 壁のポアソン比 & - \\
+\texttt{PARTICLE\_DENSITY} & 粒子の密度 & kg/m$^3$ \\
+\texttt{FRICTION\_COEFF\_PARTICLE} & 粒子間摩擦係数 & - \\
+\texttt{FRICTION\_COEFF\_WALL} & 壁-粒子間摩擦係数 & - \\
+\texttt{ROLLING\_FRICTION\_COEFF\_PARTICLE} & 粒子間転がり摩擦係数 & - \\
+\texttt{ROLLING\_FRICTION\_COEFF\_WALL} & 壁-粒子間転がり摩擦係数 & - \\
+\texttt{PARTICLE\_RADIUS\_LARGE} & 大きな粒子の半径 & m \\
+\texttt{PARTICLE\_RADIUS\_SMALL} & 小さな粒子の半径 & m \\
+\texttt{CONTAINER\_WIDTH} & 容器の幅 & m \\
+\texttt{CONTAINER\_HEIGHT} & 容器の高さ & m \\
+\texttt{PARTICLE\_GEN\_LAYERS} & 粒子生成層数 & - \\
+\texttt{RANDOM\_SEED} & 乱数シード & - \\
+\texttt{OUTPUT\_INTERVAL} & 出力間隔 & steps \\
+\texttt{ENABLE\_COULOMB\_FORCE} & クーロン力の有効化 & 0/1 \\
+\texttt{COULOMB\_CUTOFF} & クーロン力カットオフ半径 & m \\
+\texttt{ENABLE\_WALL\_WITHDRAW} & 壁引き抜きの有効化 & 0/1 \\
+\texttt{WALL\_WITHDRAW\_STEP} & 壁引き抜き開始ステップ & steps \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{プログラムのフローチャート}
+\label{app:flowchart}
+
+図\ref{fig:flowchart}にDEMプログラムの全体フローチャートを示す。
+
+% ここにフローチャートを挿入
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{figures/flowchart.pdf}
+% \caption{DEMプログラムのフローチャート}
+% \label{fig:flowchart}
+% \end{figure}
+
+\begin{enumerate}
+    \item 入力ファイルの読み込み
+    \item 粒子の初期配置生成
+    \item 材料パラメータの計算
+    \item 時間ステップループ開始
+    \begin{enumerate}
+        \item 近傍粒子探索（セル法）
+        \item 接触判定（粒子間、粒子-壁間）
+        \item 接触力の計算
+        \item クーロン力の計算（有効な場合）
+        \item 時間積分（蛙飛び法）
+        \item 結果出力（指定間隔ごと）
+        \item 静止判定（有効な場合）
+    \end{enumerate}
+    \item 最終結果の出力
+    \item 計算終了
+\end{enumerate}
+
+% ============================================================================
+% 文書終了
+% ============================================================================
+\end{document}

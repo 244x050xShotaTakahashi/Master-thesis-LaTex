@@ -1,0 +1,69 @@
+# PEMシミュレーション クーロン力テスト用inputファイル
+# クーロン力（静電気力）を有効にした計算用
+
+# === シミュレーション制御パラメータ ===
+TIME_STEP                   1.0e-7      # 時間刻み [s]
+MAX_CALCULATION_STEPS       30000000    # 最大計算ステップ数
+
+# === 材料物性値 ===
+YOUNG_MODULUS_PARTICLE      4.9e9       # 粒子のヤング率 [Pa]
+YOUNG_MODULUS_WALL          3.9e9       # 壁のヤング率 [Pa]
+POISSON_RATIO_PARTICLE      0.23        # 粒子のポアソン比 [-]
+POISSON_RATIO_WALL          0.25        # 壁のポアソン比 [-]
+PARTICLE_DENSITY            2480.0      # 粒子の密度 [kg/m³]
+
+# === 摩擦係数 ===
+FRICTION_COEFF_PARTICLE     0.25        # 粒子間摩擦係数 [-]
+FRICTION_COEFF_WALL         0.17        # 壁-粒子間摩擦係数 [-]
+ROLLING_FRICTION_COEFF_PARTICLE    0.2  # 粒子間転がり摩擦係数 [-]
+ROLLING_FRICTION_COEFF_WALL        0.2  # 粒子-壁間転がり摩擦係数 [-]
+
+# === 粒子生成パラメータ ===
+# RADIUS_DISTRIBUTION_TYPE    file
+# RADIUS_LIST_FILE            "inputs/radii.dat"    # 半径リストファイルパス
+PARTICLE_RADIUS_LARGE       1.0e-3      # 粒子半径 [m] (1mm)
+PARTICLE_RADIUS_SMALL       1.0e-3      # 粒子半径 [m] (1mm)
+CONTAINER_WIDTH             2.0         # 容器の幅 [m]
+CONTAINER_HEIGHT            0.0         # 容器の高さ [m] (0.0=制限なし)
+PARTICLE_GEN_LAYERS         20          # 初期粒子生成層数 [-]
+RANDOM_SEED                 584287      # 乱数シード [-]
+
+# === クーロン力（静電気力）設定 ===
+ENABLE_COULOMB_FORCE        1           # クーロン力の有効化 (1=ON, 0=OFF)
+COULOMB_CONSTANT            8.99e9      # クーロン定数 k [N⋅m²/C²]
+DEFAULT_CHARGE              1.0e-9      # デフォルト粒子電荷 [C] (1 nC)
+
+# --- クーロン力高速化パラメータ ---
+COULOMB_CUTOFF              0.05        # カットオフ半径 [m] (この距離以上の粒子ペアは無視)
+COULOMB_SOFTENING           0.0         # ソフトニング δ [m] (0=自動設定: 最大半径の5%)
+COULOMB_SHIFT_FORCE         1           # シフトドフォース (1=ON: カットオフで力を連続にする)
+COULOMB_USE_CELL            1           # セル法使用 (1=ON: 高速, 0=OFF: 全対全計算)
+
+# --- 電荷分布設定（オプション）---
+# CHARGE_DISTRIBUTION_TYPE   fixed       # 'fixed'(デフォルト), 'uniform', 'normal', 'file'
+# CHARGE_UNIFORM_MIN         0.5e-9      # 一様分布の最小値 [C]
+# CHARGE_UNIFORM_MAX         2.0e-9      # 一様分布の最大値 [C]
+# CHARGE_NORMAL_MEAN         1.0e-9      # 正規分布の平均値 [C]
+# CHARGE_NORMAL_STD          0.2e-9      # 正規分布の標準偏差 [C]
+# CHARGE_LIST_FILE           "inputs/charges.dat"  # 電荷リストファイルパス
+
+# === セル法アルゴリズム制御 ===
+DISABLE_CELL_ALGORITHM      0           # セル法アルゴリズム (1=OFF, 0=ON)
+STOP_WHEN_STATIC            1           # 静止検出時に停止 (1=ON, 0=OFF)
+
+# === 出力制御パラメータ ===
+OUTPUT_INTERVAL             1000000     # 出力間隔 [ステップ]
+KINETIC_ENERGY_THRESHOLD    1.0d-10     # 運動エネルギーを用いた静止判定の閾値 [J]
+ENABLE_PROFILING            1           # 計算時間の計測 (1=ON, 0=OFF)
+MIN_STEPS_BEFORE_STATIC_CHECK 5000000   # 静止判定有効化までの最小ステップ
+PROFILING_SAMPLE_INTERVAL   1000000     # 計算時間計測間隔
+
+# === 壁引き抜きパラメータ ===
+ENABLE_WALL_WITHDRAW        1           # 壁引き抜き有効化 (1=ON, 0=OFF)
+WALL_WITHDRAW_STEP          10000000     # 引き抜き開始ステップ (充填・堆積後)
+WITHDRAW_WALL_ID            0           # 引き抜くコンテナ壁 (1=左,2=下,3=右,4=上, 0=無効)
+WITHDRAW_SLOPED_WALL_ID     1           # 引き抜く斜面壁ID (walls.datの壁番号, 0=無効)
+
+
+
+

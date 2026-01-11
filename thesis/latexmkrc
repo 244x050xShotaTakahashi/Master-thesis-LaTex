@@ -1,0 +1,36 @@
+# latexmk設定ファイル
+
+# LuaLaTeXを使用（日本語対応）
+$pdf_mode = 4;  # 4 = lualatex
+$lualatex = 'lualatex -synctex=1 -interaction=nonstopmode %O %S';
+
+# pdfLaTeXを使用する場合は以下をコメントアウトして有効化
+# $pdf_mode = 1;  # 1 = pdflatex
+# $pdflatex = 'pdflatex -synctex=1 -interaction=nonstopmode %O %S';
+
+# platex + dvipdfmxを使用する場合は以下をコメントアウトして有効化
+# $pdf_mode = 3;  # 3 = dvipdfmx
+# $latex = 'platex -synctex=1 -interaction=nonstopmode %O %S';
+# $dvipdf = 'dvipdfmx %O -o %D %S';
+# $bibtex = 'pbibtex %O %B';
+
+# 出力ディレクトリ（コメントアウトで現在のディレクトリに出力）
+# $out_dir = 'out';
+
+# クリーンアップ時に削除する拡張子
+$clean_ext = 'synctex.gz synctex synctex(busy) run.xml tex.bak bbl bcf fdb_latexmk run tdo %R-blx.bib';
+
+# プレビューアの設定（macOS）
+$pdf_previewer = 'open -a Preview';
+# $pdf_previewer = 'open -a Skim';  # Skimを使用する場合
+
+
+
+
+
+
+
+
+
+
+
