@@ -60,7 +60,7 @@ lualatex charged_dust_dem_thesis
 
 このテンプレートを使用するには、以下のLaTeXパッケージが必要です：
 
-- jsreport（日本語レポートクラス）
+- ltjsreport（日本語レポートクラス）
 - amsmath, amssymb, amsthm（数式）
 - graphicx（図の挿入）
 - booktabs, tabularx, multirow（表）
@@ -70,6 +70,8 @@ lualatex charged_dust_dem_thesis
 - siunitx（SI単位系）
 - physics（物理記号）
 - subcaption（サブキャプション）
+- titlesec（章の余白調整）
+- geometry（ページレイアウト）
 
 ### TeX Liveのインストール
 

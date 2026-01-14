@@ -1,25 +1,22 @@
 % ============================================================================
 % 修士論文 - 帯電ダストダイナミクス解析のための個別要素法シミュレーションモデルの開発
 % ============================================================================
-% コンパイル方法: lualatex main.tex （2〜3回実行）
+% コンパイル方法: Menu > Compiler を "LaTeX" に設定し、.latexmkrc を作成すること
 % ============================================================================
-\documentclass[a4paper,11pt,twoside,lualatex]{ltjsreport}
+% 【変更点】ドキュメントクラスを jsreport (uplatex対応) に変更
+\documentclass[a4paper,11pt,twoside,uplatex,dvipdfmx]{jsreport}
 
 % ============================================================================
 % パッケージ読み込み
 % ============================================================================
-% LuaLaTeX用日本語設定
-\usepackage{luatexja}
-\usepackage{luatexja-fontspec}
-% 日本語フォント設定（デフォルトフォントを使用）
-\setmainjfont{Hiragino Mincho ProN}  % macOS標準の明朝体
-\setsansjfont{Hiragino Kaku Gothic ProN}  % macOS標準のゴシック体
+% 【削除】LuaLaTeX用の設定（luatexjaなど）はすべて削除しました
 
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{bm}                     % 太字ベクトル
-\usepackage{graphicx}
+\usepackage[dvipdfmx]{graphicx}     % 【変更】ドライバオプションを追加
+\usepackage{bmpsize}                % 【追加】画像サイズの自動計測（xbbエラー対策）
 \usepackage{color}
-\usepackage{subcaption}             % サブキャプション（(a), (b)等）
+\usepackage{subcaption}             % サブキャプション
 \usepackage{booktabs}               % 表の罫線
 \usepackage{tabularx}               % 柔軟な表
 \usepackage{multirow}               % 表のセル結合
@@ -27,25 +24,35 @@
 \usepackage{algorithm}              % アルゴリズム
 \usepackage{algorithmic}            % アルゴリズム
 \usepackage{url}                    % URL表示
-\usepackage{hyperref}               % ハイパーリンク
+\usepackage[dvipdfmx]{hyperref}     % 【変更】ドライバオプションを追加
 \usepackage{siunitx}                % SI単位系
 \usepackage{physics}                % 物理記号
 
-% チャプター上部の余白調整
-\usepackage{titlesec}
-\titleformat{\chapter}[display]
-  {\normalfont\huge\bfseries}{第\thechapter 章}{20pt}{\Huge}
-\titlespacing*{\chapter}{0pt}{-30pt}{30pt}
+% 【注意】jsreportとtitlesecは競合することがあるため、一旦コメントアウトしています。
+% デザイン調整が必要な場合はjsreportの仕様に合わせて再調整が必要です。
+% \usepackage{titlesec}
+% \titleformat{\chapter}[display]
+%   {\normalfont\huge\bfseries}{第\thechapter 章}{20pt}{\Huge}
+% \titlespacing*{\chapter}{0pt}{-30pt}{30pt}
 
 % ページレイアウト
 \usepackage[top=30mm, bottom=30mm, inner=30mm, outer=25mm]{geometry}
+
+% ハイパーリンクのカラー設定（dvipdfmx用）
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    setpagesize=false % dvipdfmxでページサイズがずれるのを防ぐ
+}
 
 % 定理環境
 \theoremstyle{definition}
 \newtheorem{definition}{定義}[chapter]
 \newtheorem{theorem}{定理}[chapter]
 
-% ソースコードの設定
+% ソースコードの設定（日本語コメント対策として jlisting がない環境向けに調整）
 \lstset{
     language=Fortran,
     basicstyle=\ttfamily\small,
@@ -58,14 +65,7 @@
     frame=single,
     breaklines=true,
     captionpos=b,
-}
-
-% ハイパーリンクの設定
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    citecolor=blue,
-    urlcolor=blue
+    escapechar=\%, % 日本語コメントのエスケープ用（必要に応じて）
 }
 
 % ============================================================================
@@ -86,15 +86,15 @@
 
 \vspace{2.5cm}
 
-{\fontsize{24pt}{24pt}\selectfont 帯電ダストダイナミクス解析のための}\\[0.5cm]
-{\fontsize{24pt}{24pt}\selectfont 個別要素法シミュレーションモデルの開発}
+{\LARGE 帯電ダストダイナミクス解析のための}\\[0.5cm]
+{\LARGE 個別要素法シミュレーションモデルの開発}
 
 \vspace{2.5cm}
 
 {\fontsize{16pt}{16pt}\selectfont 神戸大学大学院システム情報学研究科}\\[0.2cm]
 {\fontsize{16pt}{16pt}\selectfont システム情報学専攻}
 
-\vspace{1cm}
+\vspace{1.5cm}
 
 {\Large 高橋　昇大}
 
