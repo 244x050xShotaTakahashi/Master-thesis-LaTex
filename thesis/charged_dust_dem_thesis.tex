@@ -456,14 +456,13 @@ Leapfrog法は、位置と速度を半ステップずらして定義するシン
 \end{equation}
 
 \subsection{検証結果}
-図\ref{fig:damped_oscillator}に、数値解析結果と理論解（式\ref{eq:damped_solution}）の比較を示す。
-粒子の変位および速度の時刻歴は理論解と極めて良好に一致しており、法線方向の接触力計算およびLeapfrog法による時間積分が正しく実装されていることを確認した。
-さらに、数値解から算出した反発係数は設定値（$e=0.8$）と相対誤差1\%以内で一致した。
+Fig.~\ref{fig:damped_oscillator}に、数値解析結果と理論解（式\ref{eq:damped_solution}）の比較を示す。
+粒子の変位および速度の時刻歴は理論解と極めて良好に一致しており、法線方向の接触力計算およびLeapfrog法による時間積分が正しく実装されていることを確認した。さらに、数値解から算出した反発係数は設定値（$e=0.8$）と相対誤差1\%以内で一致した。
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/damped_oscillator.png}
-    \caption{減衰振動における変位・速度の時刻歴応答比較。実線が数値解、破線が理論解を示す。}
+    \caption{Comparison of displacement and velocity time histories in damped oscillation. Solid lines represent numerical solutions, dashed lines represent theoretical solutions.}
     \label{fig:damped_oscillator}
 \end{figure}
 
@@ -502,13 +501,13 @@ Hertz接触理論における法線力は、重なり量（オーバーラップ
 
 \subsubsection{検証結果}
 シミュレーションでは、粒子（$m=1.0\,\mathrm{kg}$, $R=0.1\,\mathrm{m}$）を初速度 $v_0=1.0\,\mathrm{m/s}$ で壁に衝突させた。
-図\ref{fig:wall_collision}に、衝突過程における粒子の重なり量の時刻歴を示す。
+Fig.~\ref{fig:wall_collision}に、衝突過程における粒子の重なり量の時刻歴を示す。
 数値解析によって得られた最大重なり量は、式(\ref{eq:delta_max})から算出される理論値と相対誤差0.1\%以下で一致しており、Hertz接触モデルの非線形バネ挙動が正しく計算されていることを確認した。
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/overlap_validation.png}
-    \caption{粒子-壁衝突における重なり量と速度の時刻歴。上段：重なり量、下段：相対速度。実線が数値解、破線が理論解を示す。}
+    \caption{Time history of overlap and velocity in particle-wall collision. Top: overlap, Bottom: relative velocity. Solid lines represent numerical solutions, dashed lines represent theoretical solutions.}
     \label{fig:wall_collision}
 \end{figure}
 
@@ -533,14 +532,14 @@ Hertz接触理論における法線力は、重なり量（オーバーラップ
 
 \subsubsection{検証結果}
 粒子1（$v_1 = v_0$）と静止した粒子2（$v_2 = 0$）を衝突させた。
-図\ref{fig:particle_collision}に、衝突前後の2粒子の速度変化を示す。
+Fig.~\ref{fig:particle_collision}に、衝突前後の2粒子の速度変化を示す。
 衝突過程において粒子1は減速し、粒子2は加速され、最終的に速度が完全に入れ替わっていることが確認できる（式\ref{eq:elastic_collision}と一致）。
 また、衝突前後での全運動量 $p = m(v_1 + v_2)$ の変化は数値誤差の範囲内（相対誤差 $10^{-10}$ 以下）でゼロであり、運動量保存則が厳密に成立していることを実証した。
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/particle_collision_validation.png}
-    \caption{2粒子間の正面衝突における速度変化の検証。衝突後に速度が入れ替わる弾性衝突の特性が正しく再現されている。}
+    \caption{Verification of velocity change in head-on collision between two particles. The characteristic of elastic collision where velocities are exchanged after collision is correctly reproduced.}
     \label{fig:particle_collision}
 \end{figure}
 
@@ -587,30 +586,27 @@ Hertz接触理論における法線力は、重なり量（オーバーラップ
 傾斜角 $\theta = 45°$、摩擦係数 $\mu = 0.2$ の条件でシミュレーションを行った。
 この条件では $\mu_c = \frac{2}{7}\tan(45°) \approx 0.286$ であり、$\mu < \mu_c$ なので滑り条件となる。
 理論加速度は式(\ref{eq:slide_accel})より $a = g(\sin 45° - 0.2 \cos 45°) \approx 5.55\,\mathrm{m/s^2}$ と予測される。
+Fig.~\ref{fig:slope_velocity}に、斜面上の粒子の並進速度の時刻歴を示す。
 数値解析結果は理論値と相対誤差1.0\%未満で一致した。
 
 \subsubsection{転がり摩擦の検証}
 摩擦係数 $\mu = 0.5$（$> \mu_c$）の転がり条件でシミュレーションを行った。
 理論加速度は式(\ref{eq:roll_accel})より $a = \frac{5}{7} g \sin 45° \approx 4.95\,\mathrm{m/s^2}$ である。
-図\ref{fig:slope_velocity}に、斜面上の粒子の並進速度の時刻歴を示す。
+Fig.~\ref{fig:slope_velocity_rolling}に、転がり条件における斜面上の粒子の並進速度の時刻歴を示す。
 数値解析結果は理論加速度と良好に一致し、転がり条件が正しく実現されていることを確認した。
-
-さらに、純転がり条件では角速度 $\omega$ と並進速度 $v$ の間に $\omega = v/R$ の関係（滑りなし条件）が成り立つ。
-図\ref{fig:slope_angular_velocity}に角速度の時刻歴を示す。
-数値解析で得られた角速度は、速度から計算した理論値 $\omega = v/R$ と一致しており、接触点で滑りが生じていないことを確認した。
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/slope_velocity.png}
-    \caption{斜面滑り試験における粒子の並進速度の時刻歴。転がり条件（$\mu=0.5$）において、理論加速度 $a = \frac{5}{7}g\sin\theta$ と数値解が良好に一致している。}
+    \caption{Time history of particle translational velocity in slope sliding test. Under sliding condition ($\mu=0.2$), numerical solution shows good agreement with theoretical acceleration $a = g(\sin\theta - \mu\cos\theta)$.}
     \label{fig:slope_velocity}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/slope_angular_velocity.png}
-    \caption{転がり条件における角速度の時刻歴。数値解（実線）と理論値 $\omega = v/R$（破線）が一致しており、純転がり条件が満たされていることを確認できる。}
-    \label{fig:slope_angular_velocity}
+    \includegraphics[width=0.8\textwidth]{figures/slope_velocity_rolling.png}
+    \caption{Time history of particle translational velocity in slope rolling test. Under rolling condition ($\mu=0.5$), numerical solution shows good agreement with theoretical acceleration $a = \frac{5}{7}g\sin\theta$.}
+    \label{fig:slope_velocity_rolling}
 \end{figure}
 
 \section{静電気力の検証（2粒子間相互作用）}
@@ -661,7 +657,7 @@ Hertz接触理論における法線力は、重なり量（オーバーラップ
 と定義される。式(\ref{eq:coulomb_time_distance})の逆関数を数値的に求めることで、任意の時刻における $r(t)$ が得られる。
 
 \subsection{検証結果}
-図\ref{fig:coulomb_valid}に、数値解と理論解（式\ref{eq:coulomb_time_distance}の逆関数）の比較を示す。
+Fig.~\ref{fig:coulomb_valid}に、数値解と理論解（式\ref{eq:coulomb_time_distance}の逆関数）の比較を示す。
 上段は粒子間距離、中段は粒子速度、下段はクーロン力の大きさの時刻歴である。
 カットオフ距離を十分大きく設定（$r_c \gg r_0$）した場合、数値解は理論解と極めて良好に一致し、相対誤差は $10^{-6}$ 以下であった。
 これにより、長距離力である静電気力が正しく計算されていることを確認した。
@@ -669,27 +665,27 @@ Hertz接触理論における法線力は、重なり量（オーバーラップ
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/coulomb_two_particles_comparison.png}
-    \caption{2粒子間クーロン相互作用の検証。上段：粒子間距離、中段：粒子速度、下段：クーロン力。実線が数値解、破線が理論解を示す。}
+    \caption{Verification of Coulomb interaction between two particles. Top: inter-particle distance, Middle: particle velocity, Bottom: Coulomb force. Solid lines represent numerical solutions, dashed lines represent theoretical solutions.}
     \label{fig:coulomb_valid}
 \end{figure}
 
 \section{本章のまとめ}
 以上の検証計算により、本研究で開発したDEMコードにおける各物理モデルが理論解と良好に一致することを確認した。
-表\ref{tab:validation_summary}に検証結果の概要を示す。
+Table~\ref{tab:validation_summary}に検証結果の概要を示す。
 
 \begin{table}[htbp]
 \centering
-\caption{検証計算の概要と結果}
+\caption{Summary of validation calculations and results}
 \label{tab:validation_summary}
 \begin{tabular}{lll}
 \hline
-検証項目 & 検証内容 & 相対誤差 \\
+Validation Item & Validation Content & Relative Error \\
 \hline
-減衰振動 & 時間積分法・減衰力モデル & $< 1\%$ \\
-粒子-壁衝突 & Hertz接触・最大重なり量 & $< 0.1\%$ \\
-粒子-粒子衝突 & 運動量・エネルギー保存 & $< 10^{-10}$ \\
-斜面滑り & 滑り・転がり摩擦モデル & $< 1\%$ \\
-クーロン相互作用 & 静電気力計算 & $< 10^{-6}$ \\
+Damped oscillation & Time integration / damping model & $< 1\%$ \\
+Particle-wall collision & Hertz contact / max. overlap & $< 0.1\%$ \\
+Particle-particle collision & Momentum / energy conservation & $< 10^{-10}$ \\
+Slope sliding & Sliding / rolling friction model & $< 1\%$ \\
+Coulomb interaction & Electrostatic force calculation & $< 10^{-6}$ \\
 \hline
 \end{tabular}
 \end{table}
@@ -725,7 +721,7 @@ Hertz接触理論における法線力は、重なり量（オーバーラップ
 
 斜面の傾斜角は、表面粒子の座標データに対して線形回帰を行い、得られた傾きから算出した。
 
-図\ref{fig:wall_withdrawal}に、壁引き抜き法によるシミュレーションの様子を示す。
+Fig.~\ref{fig:wall_withdrawal}に、壁引き抜き法によるシミュレーションの様子を示す。
 (a)は壁引き抜き前の粒子充填状態、(b)は壁引き抜き後に粒子が崩落して斜面を形成した状態である。
 赤線は引き抜かれる右壁を示している。
 
@@ -734,7 +730,7 @@ Hertz接触理論における法線力は、重なり量（オーバーラップ
     \begin{subfigure}[b]{\textwidth}
         \centering
         \includegraphics[width=\textwidth]{figures/wall_before_withdrawal.png}
-        \caption{壁引き抜き前：矩形容器内に充填された粒子}
+        \caption{Before wall withdrawal: particles filled in rectangular container}
     \end{subfigure}
     
     \vspace{0.5cm}
@@ -742,35 +738,35 @@ Hertz接触理論における法線力は、重なり量（オーバーラップ
     \begin{subfigure}[b]{\textwidth}
         \centering
         \includegraphics[width=\textwidth]{figures/wall_after_withdrawal.png}
-        \caption{壁引き抜き後：崩落により形成された斜面}
+        \caption{After wall withdrawal: slope formed by particle collapse}
     \end{subfigure}
-    \caption{壁引き抜き法による安息角計測シミュレーションの様子。上段が壁引き抜き前、下段が壁引き抜き後の粒子配置を示す。}
+    \caption{Simulation of angle of repose measurement using wall withdrawal method. Top shows particle arrangement before wall withdrawal, bottom shows after.}
     \label{fig:wall_withdrawal}
 \end{figure}
 
 \section{計算条件}
 \label{sec:simulation_conditions}
 
-安息角シミュレーションに用いた計算条件を表\ref{tab:repose_params}に示す。
+安息角シミュレーションに用いた計算条件をTable~\ref{tab:repose_params}に示す。
 
 \begin{table}[htbp]
 \centering
-\caption{安息角シミュレーションの計算条件}
+\caption{Simulation conditions for angle of repose}
 \label{tab:repose_params}
 \begin{tabular}{lll}
 \toprule
-パラメータ & 値 & 単位 \\
+Parameter & Value & Unit \\
 \midrule
-粒子半径 $r$ & 1.0 & mm \\
-粒子密度 $\rho$ & 2480 & kg/m$^3$ \\
-ヤング率（粒子）$E_p$ & $4.9 \times 10^9$ & Pa \\
-ヤング率（壁）$E_w$ & $3.9 \times 10^9$ & Pa \\
-ポアソン比（粒子）$\nu_p$ & 0.23 & - \\
-ポアソン比（壁）$\nu_w$ & 0.25 & - \\
-摩擦係数（粒子間）$\mu_p$ & 0.0 $\sim$ 1.0 & - \\
-摩擦係数（壁-粒子）$\mu_w$ & 0.17 & - \\
-容器幅 $W$ & 1.5 & m \\
-時間刻み $\Delta t$ & $10^{-7}$ & s \\
+Particle radius $r$ & 1.0 & mm \\
+Particle density $\rho$ & 2480 & kg/m$^3$ \\
+Young's modulus (particle) $E_p$ & $4.9 \times 10^9$ & Pa \\
+Young's modulus (wall) $E_w$ & $3.9 \times 10^9$ & Pa \\
+Poisson's ratio (particle) $\nu_p$ & 0.23 & - \\
+Poisson's ratio (wall) $\nu_w$ & 0.25 & - \\
+Friction coeff. (particle-particle) $\mu_p$ & 0.0 $\sim$ 1.0 & - \\
+Friction coeff. (wall-particle) $\mu_w$ & 0.17 & - \\
+Container width $W$ & 1.5 & m \\
+Time step $\Delta t$ & $10^{-7}$ & s \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -787,15 +783,15 @@ Hertz接触理論における法線力は、重なり量（オーバーラップ
 
 滑り摩擦係数 $\mu$ を 0.0 から 1.0 まで変化させ、各条件での安息角を測定した。
 転がり摩擦係数は $\mu_r = 0.0$ に固定した。
-表\ref{tab:friction_results}に結果を示す。
+Table~\ref{tab:friction_results}に結果を示す。
 
 \begin{table}[htbp]
 \centering
-\caption{滑り摩擦係数と安息角の関係}
+\caption{Relationship between sliding friction coefficient and angle of repose}
 \label{tab:friction_results}
 \begin{tabular}{ccc}
 \toprule
-滑り摩擦係数 $\mu$ [-] & 安息角 $\theta_r$ [deg] & 決定係数 $R^2$ \\
+Sliding friction coeff. $\mu$ [-] & Angle of repose $\theta_r$ [deg] & Coeff. of determination $R^2$ \\
 \midrule
 0.0 & 0.93 & 0.74 \\
 0.2 & 9.64 & 0.92 \\
@@ -807,7 +803,7 @@ Hertz接触理論における法線力は、重なり量（オーバーラップ
 \end{tabular}
 \end{table}
 
-図\ref{fig:friction_vs_angle}に、滑り摩擦係数と安息角の関係を示す。
+Fig.~\ref{fig:friction_vs_angle}に、滑り摩擦係数と安息角の関係を示す。
 摩擦係数が0のときは約0.9°と非常に低い安息角を示すが、摩擦係数の増加に伴い安息角も増加する傾向が確認できる。
 $\mu = 0.2$ で約9.6°、$\mu = 0.4$ 以上では11°〜13°程度で概ね飽和する傾向を示した。
 これは、摩擦力が大きくなると粒子間の滑りが抑制され、より急な斜面が安定するためである。
@@ -815,7 +811,7 @@ $\mu = 0.2$ で約9.6°、$\mu = 0.4$ 以上では11°〜13°程度で概ね飽�
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/friction_vs_repose_angle.png}
-    \caption{滑り摩擦係数と安息角の関係。摩擦係数の増加に伴い安息角も増加するが、$\mu > 0.4$ では飽和傾向を示す。}
+    \caption{Relationship between sliding friction coefficient and angle of repose. Angle of repose increases with friction coefficient but shows saturation tendency for $\mu > 0.4$.}
     \label{fig:friction_vs_angle}
 \end{figure}
 
@@ -824,15 +820,15 @@ $\mu = 0.2$ で約9.6°、$\mu = 0.4$ 以上では11°〜13°程度で概ね飽�
 
 次に、転がり摩擦係数 $\mu_r$ の影響を調査した。
 滑り摩擦係数を $\mu = 0.5$ に固定し、転がり摩擦係数を 0.0 から 1.0 まで変化させた。
-表\ref{tab:rolling_friction_results}に結果を示す。
+Table~\ref{tab:rolling_friction_results}に結果を示す。
 
 \begin{table}[htbp]
 \centering
-\caption{転がり摩擦係数と安息角の関係}
+\caption{Relationship between rolling friction coefficient and angle of repose}
 \label{tab:rolling_friction_results}
 \begin{tabular}{ccc}
 \toprule
-転がり摩擦係数 $\mu_r$ [-] & 安息角 $\theta_r$ [deg] & 決定係数 $R^2$ \\
+Rolling friction coeff. $\mu_r$ [-] & Angle of repose $\theta_r$ [deg] & Coeff. of determination $R^2$ \\
 \midrule
 0.0 & 1.51 & 0.50 \\
 0.2 & 8.24 & 0.92 \\
@@ -844,7 +840,7 @@ $\mu = 0.2$ で約9.6°、$\mu = 0.4$ 以上では11°〜13°程度で概ね飽�
 \end{tabular}
 \end{table}
 
-図\ref{fig:rolling_friction_vs_angle}に、転がり摩擦係数と安息角の関係を示す。
+Fig.~\ref{fig:rolling_friction_vs_angle}に、転がり摩擦係数と安息角の関係を示す。
 転がり摩擦係数が 0 の場合、粒子は自由に回転するため、非常に低い安息角（約1.5°）となる。
 転がり摩擦係数を増加させると安息角は増加し、$\mu_r = 0.2$ で急激に上昇した後、$\mu_r > 0.4$ では漸増傾向を示す。
 これは、転がり摩擦が粒子の回転運動を抑制することで、斜面がより急な角度で安定することを示している。
@@ -852,7 +848,7 @@ $\mu = 0.2$ で約9.6°、$\mu = 0.4$ 以上では11°〜13°程度で概ね飽�
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/rolling_friction_vs_repose_angle.png}
-    \caption{転がり摩擦係数と安息角の関係。転がり摩擦の導入により、安息角が大幅に増加することが確認できる。}
+    \caption{Relationship between rolling friction coefficient and angle of repose. Introduction of rolling friction significantly increases the angle of repose.}
     \label{fig:rolling_friction_vs_angle}
 \end{figure}
 
@@ -1009,39 +1005,39 @@ Springer, 2005.
 \chapter{入力パラメータ一覧}
 \label{app:parameters}
 
-表\ref{tab:all_params}に、DEMプログラムで使用可能なすべての入力パラメータを示す。
+Table~\ref{tab:all_params}に、DEMプログラムで使用可能なすべての入力パラメータを示す。
 
 \begin{table}[htbp]
 \centering
-\caption{入力パラメータ一覧}
+\caption{List of input parameters}
 \label{tab:all_params}
 \small
 \begin{tabularx}{\textwidth}{lXl}
 \toprule
-パラメータ名 & 説明 & 単位 \\
+Parameter Name & Description & Unit \\
 \midrule
-\texttt{TIME\_STEP} & 時間刻み & s \\
-\texttt{MAX\_CALCULATION\_STEPS} & 最大計算ステップ数 & - \\
-\texttt{YOUNG\_MODULUS\_PARTICLE} & 粒子のヤング率 & Pa \\
-\texttt{YOUNG\_MODULUS\_WALL} & 壁のヤング率 & Pa \\
-\texttt{POISSON\_RATIO\_PARTICLE} & 粒子のポアソン比 & - \\
-\texttt{POISSON\_RATIO\_WALL} & 壁のポアソン比 & - \\
-\texttt{PARTICLE\_DENSITY} & 粒子の密度 & kg/m$^3$ \\
-\texttt{FRICTION\_COEFF\_PARTICLE} & 粒子間摩擦係数 & - \\
-\texttt{FRICTION\_COEFF\_WALL} & 壁-粒子間摩擦係数 & - \\
-\texttt{ROLLING\_FRICTION\_COEFF\_PARTICLE} & 粒子間転がり摩擦係数 & - \\
-\texttt{ROLLING\_FRICTION\_COEFF\_WALL} & 壁-粒子間転がり摩擦係数 & - \\
-\texttt{PARTICLE\_RADIUS\_LARGE} & 大きな粒子の半径 & m \\
-\texttt{PARTICLE\_RADIUS\_SMALL} & 小さな粒子の半径 & m \\
-\texttt{CONTAINER\_WIDTH} & 容器の幅 & m \\
-\texttt{CONTAINER\_HEIGHT} & 容器の高さ & m \\
-\texttt{PARTICLE\_GEN\_LAYERS} & 粒子生成層数 & - \\
-\texttt{RANDOM\_SEED} & 乱数シード & - \\
-\texttt{OUTPUT\_INTERVAL} & 出力間隔 & steps \\
-\texttt{ENABLE\_COULOMB\_FORCE} & クーロン力の有効化 & 0/1 \\
-\texttt{COULOMB\_CUTOFF} & クーロン力カットオフ半径 & m \\
-\texttt{ENABLE\_WALL\_WITHDRAW} & 壁引き抜きの有効化 & 0/1 \\
-\texttt{WALL\_WITHDRAW\_STEP} & 壁引き抜き開始ステップ & steps \\
+\texttt{TIME\_STEP} & Time step & s \\
+\texttt{MAX\_CALCULATION\_STEPS} & Maximum calculation steps & - \\
+\texttt{YOUNG\_MODULUS\_PARTICLE} & Young's modulus of particle & Pa \\
+\texttt{YOUNG\_MODULUS\_WALL} & Young's modulus of wall & Pa \\
+\texttt{POISSON\_RATIO\_PARTICLE} & Poisson's ratio of particle & - \\
+\texttt{POISSON\_RATIO\_WALL} & Poisson's ratio of wall & - \\
+\texttt{PARTICLE\_DENSITY} & Particle density & kg/m$^3$ \\
+\texttt{FRICTION\_COEFF\_PARTICLE} & Particle-particle friction coeff. & - \\
+\texttt{FRICTION\_COEFF\_WALL} & Wall-particle friction coeff. & - \\
+\texttt{ROLLING\_FRICTION\_COEFF\_PARTICLE} & Particle-particle rolling friction coeff. & - \\
+\texttt{ROLLING\_FRICTION\_COEFF\_WALL} & Wall-particle rolling friction coeff. & - \\
+\texttt{PARTICLE\_RADIUS\_LARGE} & Large particle radius & m \\
+\texttt{PARTICLE\_RADIUS\_SMALL} & Small particle radius & m \\
+\texttt{CONTAINER\_WIDTH} & Container width & m \\
+\texttt{CONTAINER\_HEIGHT} & Container height & m \\
+\texttt{PARTICLE\_GEN\_LAYERS} & Particle generation layers & - \\
+\texttt{RANDOM\_SEED} & Random seed & - \\
+\texttt{OUTPUT\_INTERVAL} & Output interval & steps \\
+\texttt{ENABLE\_COULOMB\_FORCE} & Enable Coulomb force & 0/1 \\
+\texttt{COULOMB\_CUTOFF} & Coulomb force cutoff radius & m \\
+\texttt{ENABLE\_WALL\_WITHDRAW} & Enable wall withdrawal & 0/1 \\
+\texttt{WALL\_WITHDRAW\_STEP} & Wall withdrawal start step & steps \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1049,7 +1045,7 @@ Springer, 2005.
 \chapter{プログラムのフローチャート}
 \label{app:flowchart}
 
-図\ref{fig:flowchart}にDEMプログラムの全体フローチャートを示す。
+Fig.~\ref{fig:flowchart}にDEMプログラムの全体フローチャートを示す。
 
 % ここにフローチャートを挿入
 % \begin{figure}[htbp]

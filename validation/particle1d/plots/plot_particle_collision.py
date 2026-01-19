@@ -130,18 +130,18 @@ def plot_overlap(df, output_dir='data'):
     # 上段: オーバーラップ比較、下段: 速度比較
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
 
-    ax1.plot(t * 1e3, num * 1e3, label='数値解', color='C0', lw=2)
-    ax1.plot(t * 1e3, theo * 1e3, label='理論解', color='C3', lw=2, ls='--')
-    ax1.set_ylabel('オーバーラップ (mm)')
-    ax1.set_title('粒子間衝突：理論解と数値解のオーバーラップ比較')
+    ax1.plot(t * 1e3, num * 1e3, label='Numerical', color='C0', lw=2)
+    ax1.plot(t * 1e3, theo * 1e3, label='Theoretical', color='C3', lw=2, ls='--')
+    ax1.set_ylabel('Overlap (mm)')
+    ax1.set_title('Particle Collision: Overlap Comparison')
     ax1.grid(True, alpha=0.3)
     ax1.legend()
 
-    ax2.plot(t * 1e3, v_num, label='数値解 相対速度', color='C0', lw=2)
-    ax2.plot(t * 1e3, v_theo, label='理論解 相対速度', color='C3', lw=2, ls='--')
-    ax2.set_xlabel('接触開始からの時間 (ms)')
-    ax2.set_ylabel('相対速度 (m/s)')
-    ax2.set_title('粒子間衝突：理論解と数値解の相対速度比較')
+    ax2.plot(t * 1e3, v_num, label='Numerical Relative Velocity', color='C0', lw=2)
+    ax2.plot(t * 1e3, v_theo, label='Theoretical Relative Velocity', color='C3', lw=2, ls='--')
+    ax2.set_xlabel('Time from Contact Start (ms)')
+    ax2.set_ylabel('Relative Velocity (m/s)')
+    ax2.set_title('Particle Collision: Relative Velocity Comparison')
     ax2.grid(True, alpha=0.3)
     ax2.legend()
 

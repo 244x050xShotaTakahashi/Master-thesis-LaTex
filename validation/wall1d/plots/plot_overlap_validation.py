@@ -56,7 +56,7 @@ def setup_japanese_font():
     plt.rcParams['font.size'] = 12
 
 
-def load_csv(path='PEM/data/overlap_validation.csv'):
+def load_csv(path='data/overlap_validation.csv'):
     if not os.path.exists(path):
         print(f"エラー: {path} が見つかりません")
         return None
@@ -128,18 +128,18 @@ def plot_overlap(df, output_dir='plots'):
     # 上段: オーバーラップ比較、下段: 速度比較
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
 
-    ax1.plot(t * 1e3, num * 1e6, label='数値解', color='C0', lw=2)
-    ax1.plot(t * 1e3, theo * 1e6, label='理論解', color='C3', lw=2, ls='--')
-    ax1.set_ylabel('オーバーラップ (µm)')
-    ax1.set_title('理論解と数値解のオーバーラップ比較')
+    ax1.plot(t * 1e3, num * 1e6, label='Numerical', color='C0', lw=2)
+    ax1.plot(t * 1e3, theo * 1e6, label='Theoretical', color='C3', lw=2, ls='--')
+    ax1.set_ylabel('Overlap (µm)')
+    ax1.set_title('Overlap Comparison: Numerical vs Theoretical')
     ax1.grid(True, alpha=0.3)
     ax1.legend()
 
-    ax2.plot(t * 1e3, v_num, label='数値解 速度', color='C0', lw=2)
-    ax2.plot(t * 1e3, v_theo, label='理論解 速度', color='C3', lw=2, ls='--')
-    ax2.set_xlabel('接触開始からの時間 (ms)')
-    ax2.set_ylabel('速度 (m/s)')
-    ax2.set_title('理論解と数値解の速度比較')
+    ax2.plot(t * 1e3, v_num, label='Numerical Velocity', color='C0', lw=2)
+    ax2.plot(t * 1e3, v_theo, label='Theoretical Velocity', color='C3', lw=2, ls='--')
+    ax2.set_xlabel('Time from Contact Start (ms)')
+    ax2.set_ylabel('Velocity (m/s)')
+    ax2.set_title('Velocity Comparison: Numerical vs Theoretical')
     ax2.grid(True, alpha=0.3)
     ax2.legend()
 
